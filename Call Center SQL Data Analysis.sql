@@ -18,7 +18,9 @@ ALTER COLUMN call_timestamp DATE;
 SELECT * FROM call_center WHERE csat_score IS NULL
 
 --- Query to set csat_score column to replace missing values to NULL --- 
-UPDATE call_centerSET csat_score = NULLWHERE csat_score IS NULL;
+UPDATE call_center
+SET csat_score = NULL
+WHERE csat_score IS NULL;
 
 --- Count of num of rows and num of columns in table to generate table stats ---
 SELECT COUNT(*) AS num_rows FROM call_center;
@@ -30,17 +32,36 @@ WHERE table_name = 'call_center';
 SELECT id, COUNT(*) AS duplicate_count
 FROM call_center
 GROUP BY id
-HAVING COUNT(*) > 1;--- checking distinct values from columns ---SELECT DISTINCT sentiment FROM call_centerSELECT DISTINCT reason FROM call_centerSELECT DISTINCT channel FROM call_centerSELECT DISTINCT response_time FROM call_centerSELECT DISTINCT call_center FROM call_center---- Calculations ---
+HAVING COUNT(*) > 1;
+
+--- checking distinct values from columns ---
+SELECT DISTINCT sentiment FROM call_center
+SELECT DISTINCT reason FROM call_center
+SELECT DISTINCT channel FROM call_center
+SELECT DISTINCT response_time FROM call_center
+SELECT DISTINCT call_center FROM call_center
+
+---- Calculations ---
 SELECT
   MIN([call duration in minutes]) AS min_duration,
   MAX([call duration in minutes]) AS max_duration,
   ROUND(AVG([call duration in minutes]),2) AS avg_duration
-FROM call_centerSELECT
+FROM call_center
+
+
+SELECT
   MIN(csat_score) AS min_csat,
   MAX(csat_score) AS max_csat,
   ROUND(AVG(csat_score), 2) AS avg_csat
-FROM call_centerWHERE csat_score <> 0;SELECT call_center, response_time, COUNT(*) as num_count
-FROM call_center GROUP BY call_center, response_time ORDER BY call_center,num_count DESC;--- Call count of=n each day---
+FROM call_center
+WHERE csat_score <> 0;
+
+SELECT call_center, response_time, COUNT(*) as num_count
+FROM call_center 
+GROUP BY call_center, response_time 
+ORDER BY call_center,num_count DESC;
+
+--- Call count of=n each day---
 SELECT FORMAT(call_timestamp,'ddd') AS day_of_week,
 COUNT(*) AS call_count
 FROM call_center
